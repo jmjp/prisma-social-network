@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { Request, Response } from 'express';
 import { prismaClient } from '../database/database';
 class UserController {
@@ -8,8 +9,11 @@ class UserController {
                 take: 10,
                 skip: 10 * (page - 1),
             });
-            return res.json(users);
+            return res.json({status: "success", data: users});
         } catch (error) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError){
+                return res.status(400).json({status: "error", message: error.code});
+            }
             return res.status(400).json(error);
         }
     }
@@ -25,15 +29,18 @@ class UserController {
                     following: true,
                 }
             });
-            return res.json(user);
+            return res.json({status: "success", data: user});
         } catch (error) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError){
+                return res.status(400).json({status: "error", message: error.code});
+            }
             return res.status(400).json(error);
         }
     }
     async follow(req: Request, res: Response) {
         const { content, currentUser, tags } = req.body;
         try {
-            const post = await prismaClient.user.update({
+            const user = await prismaClient.user.update({
                 where: {
                     id: Number(currentUser)
                 },
@@ -45,15 +52,18 @@ class UserController {
                     }
                 }
             })
-            return res.json(post);
+            return res.json({status: "success", data: user});
         } catch (error) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError){
+                return res.status(400).json({status: "error", message: error.code});
+            }
             return res.status(400).json(error); 
         }
     }
     async unfollow(req: Request, res: Response) {
         const { content, currentUser, tags } = req.body;
         try {
-            const post = await prismaClient.user.update({
+            const user = await prismaClient.user.update({
                 where: {
                     id: Number(currentUser)
                 },
@@ -65,8 +75,11 @@ class UserController {
                     }
                 }
             })
-            return res.json(post);
+            return res.json({status: "success", data: user});
         } catch (error) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError){
+                return res.status(400).json({status: "error", message: error.code});
+            }
             return res.status(400).json(error); 
         }
     }
@@ -89,8 +102,11 @@ class UserController {
                     }
                 }
             })
-            return res.json(user);
+            return res.json({status: "success", data: user});
         }catch(error){
+            if(error instanceof Prisma.PrismaClientKnownRequestError){
+                return res.status(400).json({status: "error", message: error.code});
+            }
             return res.status(400).json(error);
         }
     }
@@ -114,8 +130,11 @@ class UserController {
                 take: 10,
                 skip: 10 * (page - 1),
             })
-            return res.json(user);
+            return res.json({status: "success", data: user});
         }catch(error){
+            if(error instanceof Prisma.PrismaClientKnownRequestError){
+                return res.status(400).json({status: "error", message: error.code});
+            }
             return res.status(400).json(error);
         }
     }

@@ -32,11 +32,12 @@ model post {
   content   String
   author    user     @relation(fields: [authorId], references: [id])
   authorId  Int
-  postId    Int?     
+  postId    Int?
   post      post?    @relation("comments", fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   comments  post[]   @relation("comments")
   media     media[]
   tags      tags[]
+  views     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
 }
@@ -46,7 +47,6 @@ model media {
   url       String
   post      post     @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   postId    Int
-  views     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
 }

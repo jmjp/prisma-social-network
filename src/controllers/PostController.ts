@@ -1,5 +1,7 @@
+import { Prisma } from '@prisma/client';
 import { Request, Response } from 'express';
 import { prismaClient } from "../database/database";
+import { PrismaErrorHandler } from '../provider/PrismaErrorHandler';
 
 class PostController {
     async find(req: Request, res: Response) {
@@ -15,14 +17,27 @@ class PostController {
                     createdAt: "desc"
                 }
             });
-            return res.json(posts);
+            return res.json({status: "success",data: posts});
         } catch (error: any) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError){
+                return res.status(400).json({status: "error", message: error.code});
+            }
             return res.status(400).json({ status: "error", message: error.message });
         }
     }
     async findOne(req: Request, res: Response) {
         try {
-            const posts = await prismaClient.post.findMany({
+            await prismaClient.post.update({
+                where: {
+                    id: Number(req.params.id)
+                },
+                data: {
+                    views: {
+                        increment: 1
+                    }
+                }
+            })
+            const posts = await prismaClient.post.findUnique({
                 where: {
                     id: Number(req.params.id)
                 },
@@ -48,8 +63,11 @@ class PostController {
 
                 }
             });
-            return res.json(posts);
+            return res.json({status: "success",data: posts});
         } catch (error: any) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError){
+                return res.status(400).json({status: "error", message: error.code});
+            }
             return res.status(400).json({ status: "error", message: error.message });
         }
     }
@@ -86,9 +104,11 @@ class PostController {
                     }
                 }
             });
-            return res.json(post);
+            return res.json({status: "success",data: post});
         } catch (error: any) {
-            console.log(error);
+            if(error instanceof Prisma.PrismaClientKnownRequestError){
+                return res.status(400).json({status: "error", message: error.code});
+            }
             return res.status(400).json({ status: "error", message: error.message });
         }
     }
@@ -99,8 +119,11 @@ class PostController {
                     id: Number(req.params.id)
                 }
             });
-            return res.json(post);
+            return res.json({status: "success",data: post});
         } catch (error: any) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError){
+                return res.status(400).json({status: "error", message: error.code});
+            }
             return res.status(400).json({ status: "error", message: error.message });
         }
     }
@@ -143,9 +166,12 @@ class PostController {
                     
                 }
             })
-            return res.json(post);
+            return res.json({status: "success", data: post});
         }
         catch (error: any) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError){
+                return res.status(400).json({status: "error", message: error.code});
+            }
             return res.status(400).json({ status: "error", message: error.message });
         }
     }
@@ -161,8 +187,11 @@ class PostController {
                     
                 }
             })
-            return res.json(post);
+            return res.json({status: "success",data: post});
         } catch (error: any) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError){
+                return res.status(400).json({status: "error", message: error.code});
+            }
             return res.status(400).json({ status: "error", message: error.message });
         }
     }
