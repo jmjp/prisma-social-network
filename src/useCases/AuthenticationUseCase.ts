@@ -45,6 +45,12 @@ class AuthenticationUseCase {
         if (!user) {
             throw new Error('User not found or invalid password');
         }
+        if(!user.confirmed){
+            throw new Error('User not confirmed');
+        }
+        if(user.blocked){
+            throw new Error('User is currently blocked. please contact the support support@app.com');
+        }
         const passwordMatch = await argon2.verify(user.password!, request.password);
         if (!passwordMatch) {
             throw new Error('User not found or invalid password');

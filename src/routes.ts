@@ -3,30 +3,36 @@ import { AuthenticationController } from './controllers/AuthenticationController
 import { PostController } from './controllers/PostController';
 import { UserController } from './controllers/UserController';
 import { ensureAuthenticated } from './middlewares/EnsureAuthenticatited';
+import { ensureNotBlocked } from './middlewares/EnsureNotBlocked';
 
 const routes = Router();
+const public_routes = Router();
 
 const userController = new UserController();
 const postController = new PostController();
-const authController =  new AuthenticationController();
+const authController = new AuthenticationController();
 
-routes.get('/users', ensureAuthenticated ,userController.find);
-routes.get('/users/me', ensureAuthenticated ,userController.me);
-routes.get('/users/feed', ensureAuthenticated ,userController.feed);
-routes.get('/users/:id', ensureAuthenticated, userController.findOne);
-routes.post('/users/follow/:id', ensureAuthenticated, userController.follow);
-routes.post('/users/unfollow/:id', ensureAuthenticated, userController.unfollow);
+routes.use(ensureAuthenticated);
+routes.use(ensureNotBlocked);
 
-routes.get('/posts', ensureAuthenticated , postController.find);
-routes.get('/posts/:id', ensureAuthenticated , postController.findOne);
-routes.delete('/posts/:id', ensureAuthenticated , postController.delete);
-routes.post('/posts', ensureAuthenticated , postController.create);
-routes.put('/posts/:id', ensureAuthenticated , postController.update);
-routes.post('/comments/post/:id', ensureAuthenticated , postController.comment);
+routes.get('/users', userController.find);
+routes.get('/users/me', userController.me);
+routes.get('/users/feed', userController.feed);
+routes.get('/users/:id', userController.findOne);
+routes.post('/users/follow/:id', userController.follow);
+routes.post('/users/unfollow/:id', userController.unfollow);
 
-routes.post('/auth/login', authController.login);
-routes.post('/auth/register', authController.register);
-routes.post('/auth/refresh-token', authController.refreshToken);
+routes.get('/posts', postController.find);
+routes.get('/posts/:id', postController.findOne);
+routes.delete('/posts/:id', postController.delete);
+routes.post('/posts', postController.create);
+routes.put('/posts/:id', postController.update);
+routes.post('/comments/post/:id', postController.comment);
+routes.post('/refresh-token', authController.refreshToken);
+
+//auth routes
+public_routes.post('/login', authController.login);
+public_routes.post('/register', authController.register);
 
 
-export { routes };
+export { routes, public_routes };

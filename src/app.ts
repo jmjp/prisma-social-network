@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { prismaClient } from '../src/database/database';
-import { routes } from './routes';
+import { public_routes, routes } from './routes';
 import { loggerHTTP } from './middlewares/HttpLogger';
 
 class App {
@@ -25,6 +25,7 @@ class App {
     }
 
     private routes(): void {
+        this.express.use('/auth', public_routes);
         this.express.use('/api/v1', routes);
     }
 }
